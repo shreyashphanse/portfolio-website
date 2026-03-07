@@ -39,7 +39,7 @@ function Achievements() {
             <h3>{ach.title}</h3>
             {ach.image && (
               <img
-                src={`http://localhost:5000${ach.image}`}
+                src={`https://portfolio-backend-t60l.onrender.com${ach.image}`}
                 alt="achievement"
                 style={{
                   maxWidth: "40%",
@@ -94,7 +94,7 @@ function Achievements() {
 
             {selectedAchievement.image && (
               <img
-                src={`http://localhost:5000${selectedAchievement.image}`}
+                src={`https://portfolio-backend-t60l.onrender.com${selectedAchievement.image}`}
                 alt="achievement"
                 style={{
                   width: "100%",
