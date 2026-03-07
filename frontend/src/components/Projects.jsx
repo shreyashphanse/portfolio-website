@@ -40,9 +40,7 @@ function Projects() {
                 whiteSpace: "pre-line",
               }}
             >
-              {project.description.length > 120
-                ? project.description.slice(0, 120) + "..."
-                : project.description}
+              {project.description}
             </p>{" "}
             <div style={{ marginTop: "10px" }}>
               {project.githubLink && (
