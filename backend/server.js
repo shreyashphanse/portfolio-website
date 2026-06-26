@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import postRoutes from "./routes/postRoutes.js";
 import siteRoutes from "./routes/siteRoutes.js";
 import path from "path";
+import healthRoute from "./routes/healthRoute.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/posts", postRoutes);
 app.use("/api/site", siteRoutes);
+app.use("/health", healthRoute);
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 connectDB();
