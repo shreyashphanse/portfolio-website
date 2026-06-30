@@ -21,50 +21,49 @@ function Achievements() {
 
     fetchAchievements();
   }, []);
+  if (!achievements || achievements.length === 0) {
+    return null;
+  }
 
   return (
     <section id="achievements">
       <h2>Achievements</h2>
-
-      {achievements.length === 0 ? (
-        <p>No achievements yet.</p>
-      ) : (
-        achievements.map((ach) => (
-          <div
-            key={ach._id}
-            className="card"
-            style={{ cursor: "pointer" }}
-            onClick={() => setSelectedAchievement(ach)}
-          >
-            <h3>{ach.title}</h3>
-            {ach.image && (
-              <img
-                src={`https://portfolio-backend-t60l.onrender.com${ach.image}`}
-                alt="achievement"
-                style={{
-                  maxWidth: "40%",
-                  borderRadius: "6px",
-                  display: "block",
-                  margin: "15px auto",
-                }}
-              />
-            )}
-            <p
+      {achievements.map((ach) => (
+        <div
+          key={ach._id}
+          className="card"
+          style={{ cursor: "pointer" }}
+          onClick={() => setSelectedAchievement(ach)}
+        >
+          <h3>{ach.title}</h3>
+          {ach.image && (
+            <img
+              src={`https://portfolio-backend-t60l.onrender.com${ach.image}`}
+              alt="achievement"
               style={{
-                marginTop: "10px",
-                wordBreak: "break-word",
-                overflowWrap: "break-word",
-                whiteSpace: "pre-line",
+                maxWidth: "40%",
+                borderRadius: "6px",
+                display: "block",
+                margin: "15px auto",
               }}
-            >
-              {" "}
-              {ach.description.length > 120
-                ? ach.description.slice(0, 120) + "..."
-                : ach.description}
-            </p>{" "}
-          </div>
-        ))
-      )}
+            />
+          )}
+          <p
+            style={{
+              marginTop: "10px",
+              wordBreak: "break-word",
+              overflowWrap: "break-word",
+              whiteSpace: "pre-line",
+            }}
+          >
+            {" "}
+            {ach.description.length > 120
+              ? ach.description.slice(0, 120) + "..."
+              : ach.description}
+          </p>{" "}
+        </div>
+      ))}
+      ),
       {selectedAchievement && (
         <div
           style={{

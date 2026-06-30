@@ -3,7 +3,9 @@ import api from "../services/api";
 
 function SettingsPage() {
   const [password, setPassword] = useState("");
-  const [newTech, setNewTech] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [newTech, setNewTech] = useState({});
+  const [resume, setResume] = useState(null);
   const [site, setSite] = useState({
     heroTitle: "",
     heroSubtitle: "",
@@ -15,35 +17,75 @@ function SettingsPage() {
     linkedin: "",
   });
 
-  const addTech = () => {
-    if (!newTech.trim()) return;
+  const uploadResume = async () => {
+    if (!resume) return;
 
-    const updated = [
-      ...site.techStack.split(", ").filter(Boolean),
-      newTech.trim(),
-    ];
+    const formData = new FormData();
 
-    setSite({
-      ...site,
-      techStack: updated.join(", "),
+    formData.append("resume", resume);
+
+    await api.post("/site/resume", formData, {
+      headers: {
+        password,
+        "Content-Type": "multipart/form-data",
+      },
     });
 
-    setNewTech("");
+    alert("Resume uploaded");
   };
 
-  const removeTech = () => {
-    if (!newTech.trim()) return;
+  const addCategory = () => {
+    if (!newCategory.trim()) return;
 
-    const updated = site.techStack
-      .split(", ")
-      .filter((t) => t.toLowerCase() !== newTech.trim().toLowerCase());
+    if (site.techStack[newCategory]) return;
 
     setSite({
       ...site,
-      techStack: updated.join(", "),
+      techStack: {
+        ...site.techStack,
+        [newCategory]: [],
+      },
     });
 
-    setNewTech("");
+    setNewCategory("");
+  };
+
+  const deleteCategory = (category) => {
+    const updated = { ...site.techStack };
+
+    delete updated[category];
+
+    setSite({
+      ...site,
+      techStack: updated,
+    });
+  };
+
+  const addTechnology = (category, tech) => {
+    if (!tech.trim()) return;
+
+    setSite({
+      ...site,
+      techStack: {
+        ...site.techStack,
+        [category]: [...site.techStack[category], tech],
+      },
+    });
+
+    setNewTech({
+      ...newTech,
+      [category]: "",
+    });
+  };
+
+  const removeTechnology = (category, tech) => {
+    setSite({
+      ...site,
+      techStack: {
+        ...site.techStack,
+        [category]: site.techStack[category].filter((t) => t !== tech),
+      },
+    });
   };
 
   useEffect(() => {
@@ -54,7 +96,13 @@ function SettingsPage() {
         if (res.data) {
           setSite({
             ...res.data,
-            techStack: res.data.techStack?.join(", ") || "",
+            techStack: res.data.techStack || {
+              Frontend: [],
+              Backend: [],
+              Database: [],
+              Languages: [],
+              Tools: [],
+            },
           });
         }
       } catch (err) {
@@ -71,7 +119,7 @@ function SettingsPage() {
     try {
       const data = {
         ...site,
-        techStack: site.techStack.split(",").map((t) => t.trim()),
+        techStack: site.techStack,
       };
 
       await api.put("/site", data, {
@@ -141,29 +189,115 @@ function SettingsPage() {
 
         <h3>Tech Stack</h3>
 
-        <input
-          placeholder="Tech name (React, Node, etc)"
-          value={newTech}
-          onChange={(e) => setNewTech(e.target.value)}
-        />
+        {Object.entries(site.techStack).map(([category, techs]) => (
+          <div
+            key={category}
+            style={{
+              border: "1px solid #ddd",
+              padding: "15px",
+              borderRadius: "8px",
+              marginBottom: "20px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h4>{category}</h4>
 
-        <div style={{ marginTop: "10px" }}>
-          <button type="button" onClick={addTech}>
-            Add
-          </button>
+              <button
+                type="button"
+                onClick={() => deleteCategory(category)}
+                style={{ background: "#c0392b" }}
+              >
+                Delete Category
+              </button>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                marginBottom: "12px",
+              }}
+            >
+              {techs.map((tech) => (
+                <span
+                  key={tech}
+                  style={{
+                    background: "#e5e5e5",
+                    padding: "6px 12px",
+                    borderRadius: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  {tech}
+
+                  <button
+                    type="button"
+                    onClick={() => removeTechnology(category, tech)}
+                    style={{
+                      background: "transparent",
+                      color: "red",
+                      padding: 0,
+                    }}
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+
+            <input
+              placeholder="New Technology"
+              value={newTech[category] || ""}
+              onChange={(e) =>
+                setNewTech({
+                  ...newTech,
+                  [category]: e.target.value,
+                })
+              }
+            />
+
+            <button
+              type="button"
+              style={{ marginLeft: "10px" }}
+              onClick={() => addTechnology(category, newTech[category] || "")}
+            >
+              Add
+            </button>
+          </div>
+        ))}
+
+        <div
+          style={{
+            border: "1px dashed #999",
+            padding: "15px",
+            borderRadius: "8px",
+          }}
+        >
+          <h4>Add Category</h4>
+
+          <input
+            placeholder="Category Name"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+          />
 
           <button
             type="button"
-            onClick={removeTech}
             style={{ marginLeft: "10px" }}
+            onClick={addCategory}
           >
-            Remove
+            Add Category
           </button>
         </div>
-
-        <p style={{ marginTop: "10px", color: "#555" }}>
-          Current: {site.techStack}
-        </p>
 
         <br />
         <br />
@@ -197,6 +331,20 @@ function SettingsPage() {
         <br />
         <br />
 
+        <h3>Resume</h3>
+
+        <input
+          type="file"
+          accept=".pdf"
+          onChange={(e) => setResume(e.target.files[0])}
+        />
+
+        <br />
+        <br />
+
+        <button type="button" onClick={uploadResume}>
+          Upload Resume
+        </button>
         <button type="submit">Update Site</button>
       </form>
     </div>

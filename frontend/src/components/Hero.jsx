@@ -27,11 +27,24 @@ function Hero() {
 
       <p style={{ fontSize: "18px", color: "#555" }}>{hero.heroSubtitle}</p>
 
-      <p style={{ maxWidth: "600px", marginTop: "10px", color: "#666" }}>
+      <p
+        style={{
+          maxWidth: "600px",
+          marginTop: "10px",
+          color: "#666",
+        }}
+      >
         {hero.heroDescription}
       </p>
 
-      <div style={{ marginTop: "20px" }}>
+      <div
+        style={{
+          marginTop: "20px",
+          display: "flex",
+          gap: "10px",
+          flexWrap: "wrap",
+        }}
+      >
         {hero.github && (
           <a href={hero.github} target="_blank" rel="noreferrer">
             <button>GitHub</button>
@@ -39,15 +52,18 @@ function Hero() {
         )}
 
         {hero.linkedin && (
-          <a
-            href={hero.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            style={{ marginLeft: "10px" }}
-          >
+          <a href={hero.linkedin} target="_blank" rel="noreferrer">
             <button>LinkedIn</button>
           </a>
         )}
+
+        <a
+          href={`https://portfolio-backend-t60l.onrender.com${hero.resumeUrl}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <button>Resume</button>
+        </a>
       </div>
     </section>
   );

@@ -7,8 +7,16 @@ const siteContentSchema = new mongoose.Schema({
 
   aboutText: String,
 
-  techStack: [String],
-
+  techStack: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {
+      Frontend: [],
+      Backend: [],
+      Database: [],
+      Languages: [],
+      Tools: [],
+    },
+  },
   email: String,
   github: String,
   linkedin: String,
